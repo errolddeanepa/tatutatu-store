@@ -1,0 +1,14 @@
+.cache
+.dockerignore
+.gitignore
+.github
+.vscode
+.idea
+.medusa
+.yarn
+.next
+.git
+build
+node_modules
+README.md
+Dockerfile
