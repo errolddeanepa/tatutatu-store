@@ -52,7 +52,7 @@ COPY --from=builder --chown=node:node /opt/storefront/build/.next/standalone ./
 COPY --from=builder --chown=node:node /opt/storefront/build/.next/static ./.next/static
 
 ARG NODE_ENV=production
-ARG PORT=8000
+ARG PORT=10000
 ARG MEDUSA_BACKEND_URL=https://medusa-backend-2-6-1-latest.onrender.com
 ARG NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_b52f1cc6fa2b09c6654506d53e63112fca28484818bcff817c7568d91e35bd2f
 ENV PORT=$PORT
