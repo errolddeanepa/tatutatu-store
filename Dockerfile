@@ -7,7 +7,7 @@ ARG NODE_ENV=development
 ENV NODE_ENV=$NODE_ENV
 
 # Install dependencies
-COPY package*.json yarn.lock* .yarn* ./
+COPY package*.json yarn.lock* .yarnrc.yml ./
 # Install dependencies (no node_modules hoisting to final image yet)
 RUN yarn install --immutable
 
