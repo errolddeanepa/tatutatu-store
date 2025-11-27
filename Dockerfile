@@ -7,13 +7,9 @@ ARG NODE_ENV=development
 ENV NODE_ENV=$NODE_ENV
 
 # Install dependencies
-COPY package*.json yarn.lock* pnpm-lock.yaml* .yarn* ./
-RUN \
-  if [ -f yarn.lock ]; then corepack enable yarn && yarn; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm install; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY package*.json yarn.lock* .yarn* ./
+# Install dependencies (no node_modules hoisting to final image yet)
+RUN yarn install --immutable
 
 FROM base AS builder
 WORKDIR /opt/storefront/build
@@ -28,12 +24,7 @@ ENV NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 # Build the application
 COPY --from=deps /opt/storefront/deps .
 COPY . .
-COPY --from=deps /opt/storefront/deps/*.lock ./
-RUN \
-  if [ -f yarn.lock ]; then corepack enable yarn && yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  fi
+RUN yarn build
 
 FROM base AS runner
 RUN apt-get update \
@@ -52,7 +43,7 @@ COPY --from=builder --chown=node:node /opt/storefront/build/.next/standalone ./
 COPY --from=builder --chown=node:node /opt/storefront/build/.next/static ./.next/static
 
 ARG NODE_ENV=production
-ARG PORT=10000
+ARG PORT=8000
 ARG MEDUSA_BACKEND_URL=http://localhost:10000
 ARG NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_b52f1cc6fa2b09c6654506d53e63112fca28484818bcff817c7568d91e35bd2f
 ENV PORT=$PORT
