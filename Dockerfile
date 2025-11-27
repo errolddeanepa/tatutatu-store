@@ -9,7 +9,7 @@ ENV NODE_ENV=$NODE_ENV
 # Install dependencies
 COPY package*.json yarn.lock* .yarnrc.yml ./
 # Install dependencies (no node_modules hoisting to final image yet)
-RUN corepack enable && yarn install --immutable
+RUN corepack enable && yarn install
 
 FROM base AS builder
 WORKDIR /opt/storefront/build
