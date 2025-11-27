@@ -24,7 +24,7 @@ ENV NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 # Build the application
 COPY --from=deps /opt/storefront/deps .
 COPY . .
-RUN corepack enable && yarn build
+RUN corepack enable && yarn install && yarn build
 
 FROM base AS runner
 RUN apt-get update \
