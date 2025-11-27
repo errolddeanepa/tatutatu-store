@@ -9,9 +9,9 @@ services:
       - 10000:10000
     environment:
       NEXT_PUBLIC_ADMIN_URL: "https://medusa-backend-2-6-1-latest.onrender.com"
-      NEXT_PUBLIC_ADMIN_PORT: "9000"
+      NEXT_PUBLIC_ADMIN_PORT: "10000"
     expose:
-      - "9000"
+      - "10000"
     deploy:
       resources:
         limits:
