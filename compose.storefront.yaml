@@ -6,12 +6,9 @@ services:
       args:
         - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_b52f1cc6fa2b09c6654506d53e63112fca28484818bcff817c7568d91e35bd2f
     ports:
-      - 10000:10000
+      - 8000:8000
     environment:
-      NEXT_PUBLIC_ADMIN_URL: "https://medusa-backend-2-6-1-latest.onrender.com"
-      NEXT_PUBLIC_ADMIN_PORT: "10000"
-    expose:
-      - "10000"
+      NEXT_PUBLIC_ADMIN_URL: "http://localhost:10000"
     deploy:
       resources:
         limits:
