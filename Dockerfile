@@ -9,7 +9,7 @@ ENV NODE_ENV=$NODE_ENV
 # Install dependencies
 COPY package*.json yarn.lock* .yarnrc.yml ./
 # Install dependencies (no node_modules hoisting to final image yet)
-RUN corepack enable && yarn install
+RUN npm install
 
 FROM base AS builder
 WORKDIR /opt/storefront/build
@@ -25,7 +25,7 @@ ENV NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=$NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 COPY --from=deps /opt/storefront/deps .
 COPY . .
 COPY --from=deps /opt/storefront/deps/*.lock ./
-RUN corepack enable yarn && yarn run build
+RUN npm run build
 
 FROM base AS runner
 RUN apt-get update \
