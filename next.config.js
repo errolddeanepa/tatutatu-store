@@ -27,7 +27,7 @@ const nextConfig = {
       },
       {
         protocol: "http",
-        hostname: "host.docker.internal",
+        hostname: "minio",
         port: "9002",
         pathname: "/medusa-bucket/**",
       },
