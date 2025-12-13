@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_b52f1cc6fa2b09c6654506d53e63112fca28484818bcff817c7568d91e35bd2f
+        - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_08a6a1f4d00558de97d59ecbf9c12f11336985d5a0815c1f9b338ee509fe34e7
     ports:
       - 8000:8000
     extra_hosts:
