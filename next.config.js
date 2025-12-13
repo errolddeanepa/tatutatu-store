@@ -23,13 +23,13 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "host.docker.internal",
-        port: "9002",
-        pathname: "/medusa-bucket/**",
+        hostname: "localhost",
       },
       {
         protocol: "http",
-        hostname: "localhost",
+        hostname: "host.docker.internal",
+        port: "9002",
+        pathname: "/medusa-bucket/**",
       },
       {
         protocol: "https",
