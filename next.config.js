@@ -24,6 +24,8 @@ const nextConfig = {
       {
         protocol: "http",
         hostname: "host.docker.internal",
+        port: "9002",
+        pathname: "/medusa-bucket/**",
       },
       {
         protocol: "http",
