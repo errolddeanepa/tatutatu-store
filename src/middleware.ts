@@ -163,3 +163,86 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
   ],
 }
+
+/**
+ * Image proxy route for Next.js App Router.
+ * Example: GET /api/images/path/to/key.jpg -> fetches http://minio:9002/medusa-bucket/path/to/key.jpg
+ *
+ * Notes:
+ * - Uses Docker internal DNS: http://minio:9002
+ * - Keep your bucket private if desired; this route governs access.
+ * - Adjust BUCKET_NAME or BASE_URL if needed.
+ */
+
+export const dynamic = "force-static"; // allow caching; change to "force-dynamic" if keys are private & auth-based
+export const revalidate = 3600; // ISR-like hint for static fetch caching (in seconds)
+
+const BUCKET_NAME = process.env.MINIO_BUCKET_NAME || "medusa-bucket";
+// For internal container-to-container fetches, use the service name 'minio'
+const MINIO_BASE_URL =
+  process.env.MINIO_INTERNAL_BASE_URL || `http://minio:9002/${BUCKET_NAME}`;
+
+function joinUrl(base: string, segments: string[]): string {
+  const s = segments.filter(Boolean).join("/");
+  return `${base.replace(/\/+$/, "")}/${s}`;
+}
+
+function pickContentType(h: Headers): string {
+  // Default to octet-stream if upstream doesn't send one
+  return h.get("content-type") ?? "application/octet-stream";
+}
+
+export async function GET(
+  _req: Request,
+  { params }: { params: { path?: string[] } }
+) {
+  const segments = params.path ?? [];
+  if (segments.length === 0) {
+    return new Response("Missing key", { status: 400 });
+  }
+
+  const upstreamUrl = joinUrl(MINIO_BASE_URL, segments);
+
+  // Stream from MinIO; avoid buffering entire file when possible
+  const upstream = await fetch(upstreamUrl, {
+    // Forward cache semantics but do not forward client headers by default
+    // You can add auth headers here if your bucket is private
+    redirect: "follow",
+    // Make sure to opt into caching in Next if you want CDN benefits
+    // cache: "force-cache", // default for GET in route handlers
+  });
+
+  // If not found, passthrough status
+  if (!upstream.ok) {
+    // Mirror upstream status (404/403/etc)
+    return new Response(await upstream.text(), {
+      status: upstream.status,
+      headers: {
+        "content-type": upstream.headers.get("content-type") ?? "text/plain",
+        "cache-control": "no-store",
+      },
+    });
+  }
+
+  // Stream body to client
+  const contentType = pickContentType(upstream.headers);
+  const contentLength = upstream.headers.get("content-length") || undefined;
+  const etag = upstream.headers.get("etag") || undefined;
+  const lastModified = upstream.headers.get("last-modified") || undefined;
+
+  // Public caching (1h) + revalidation window
+  const cacheControl =
+    process.env.IMAGE_PROXY_CACHE_CONTROL ||
+    "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400";
+
+  return new Response(upstream.body, {
+    status: 200,
+    headers: {
+      "content-type": contentType,
+      ...(contentLength ? { "content-length": contentLength } : {}),
+      ...(etag ? { etag } : {}),
+      ...(lastModified ? { "last-modified": lastModified } : {}),
+      "cache-control": cacheControl,
+    },
+  });
+}
