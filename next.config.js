@@ -23,6 +23,10 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "http",
+        hostname: "host.docker.internal",
+      },
+      {
+        protocol: "http",
         hostname: "localhost",
       },
       {

@@ -13,7 +13,7 @@ RUN npm install
 
 FROM base AS builder
 WORKDIR /opt/storefront/build
-ARG MEDUSA_BACKEND_URL=https://https://api.tatutatushopping.com
+ARG MEDUSA_BACKEND_URL=https://api.tatutatushopping.com
 ARG NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_08a6a1f4d00558de97d59ecbf9c12f11336985d5a0815c1f9b338ee509fe34e7
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
