@@ -27,7 +27,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "api.tatutatushopping.com",
+        hostname: "minio.tatutatushopping.com",
       },
       {
         protocol: "https",
